@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.protobuf)
+    id("maven-publish")
 }
 
 android {
@@ -82,6 +83,22 @@ protobuf {
             it.builtins {
                 create("kotlin") {
                     option("lite")
+                }
+            }
+        }
+    }
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            register<MavenPublication>("release") {
+                groupId = "com.github.miltsm"
+                artifactId = "android-stub"
+                version = "1.0"
+
+                afterEvaluate {
+                    from(components["release"])
                 }
             }
         }

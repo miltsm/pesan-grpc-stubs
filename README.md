@@ -1,8 +1,13 @@
 # pesan-grpc-stubs
 
 ## generate android stub
+### build local .aar
 ```
     ./gradlew :android-stub:build
+```
+### build localMaven
+```
+    ./gradlew publishToMavenLocal
 ```
 
 ## generate GO stub
