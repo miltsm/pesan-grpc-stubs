@@ -44,9 +44,11 @@ dependencies {
     api(libs.grpc.kotlin.stub)
     api(libs.protobuf.kotlin.lite)
 
+    // region Dependency Injection
+    api(libs.hilt.android)
+    // endregion
+
     implementation(libs.androidx.core.ktx)
-//    implementation(libs.androidx.appcompat)
-//    implementation(libs.material)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
 //    androidTestImplementation(libs.androidx.espresso.core)
