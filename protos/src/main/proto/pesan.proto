@@ -27,7 +27,8 @@ message ChallengeReply {
 }
 
 message AssertRequest {
-	bytes signed = 1;
+	string user_handle = 1;
+	bytes signed = 2;
 }
 
 message AssertReply {
