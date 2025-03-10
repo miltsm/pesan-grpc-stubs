@@ -21,5 +21,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "gRPC Stub"
 include(":app")
-include(":android-stub")
+include(":pesan-android-stub")
 include(":protos")

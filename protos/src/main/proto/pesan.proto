@@ -1,9 +1,9 @@
 syntax = "proto3";
 
-option go_package = "github.com/miltsm/pesan-backend";
+option go_package = "github.com/miltsm/pesan-grpc-stubs";
 option java_multiple_files = true;
-option java_package = "my.mildotdev.pesan.android_stub";
-option java_outer_classname = "PesanProto";
+option java_package = "com.github.miltsm.pesan_grpc_stubs";
+option java_outer_classname = "PesanService";
 
 package pesan;
 
@@ -11,29 +11,45 @@ import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
 
 service Pesan {
-	rpc Onboard(CredentialRequest) returns (ChallengeReply);
-	rpc RegisterPublicKey(AssertRequest) returns (AssertReply);
+	rpc OnboardWithPublicKey(OnboardRequest) returns (AssertSession);
+	rpc VerifyPublicKeyAndOnboard(VerifyPublicKeyRequest) returns (UserSession);
+
+	rpc DiscoverLogin(google.protobuf.Empty) returns (AttestSession);
+	rpc VerifyPublicKeyLogin(VerifyPublicKeyRequest) returns (UserSession);
+
 	rpc CreateNewProduct (NewProductRequest) returns (NewProductReply);
 	rpc UploadProductPhotos (stream NewPhoto) returns (google.protobuf.Empty);
 }
 
-message CredentialRequest {
+message OnboardRequest {
 	string user_handle = 1;
 	optional string display_name = 2;
+	optional string new_password = 3;
 }
 
-message ChallengeReply {
+// this allow for caching on front-end & prevent abuse calls
+message AssertSession {
 	bytes challenge = 1;
+	google.protobuf.Timestamp valid_until = 2;
 }
 
-message AssertRequest {
-	string user_handle = 1;
-	bytes signed = 2;
+message VerifyPublicKeyRequest {
+    bytes signed = 1;
 }
 
-message AssertReply {
-	optional string access_token = 1;
-	optional string refresh_token = 2;
+// this allow for caching on front-end & prevent abuse calls
+message AttestSession {
+    bytes challenge = 1;
+    google.protobuf.Timestamp valid_until = 2;
+}
+
+message UserSession {
+	string access_token = 1;
+	string user_handle = 2;
+	string display_name = 3;
+	optional string refresh_token = 4;
+	optional uint32 total_passkey = 5;
+	optional google.protobuf.Timestamp last_password_updated = 6;
 }
 
 message NewProductRequest {

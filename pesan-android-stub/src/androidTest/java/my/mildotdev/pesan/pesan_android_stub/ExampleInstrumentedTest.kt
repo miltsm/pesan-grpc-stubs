@@ -1,4 +1,4 @@
-package my.mildotdev.pesan.android_stub
+package my.mildotdev.pesan.pesan_android_stub
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

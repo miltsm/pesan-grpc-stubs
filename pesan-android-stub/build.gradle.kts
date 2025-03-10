@@ -96,7 +96,7 @@ afterEvaluate {
         publications {
             register<MavenPublication>("release") {
                 groupId = "com.github.miltsm"
-                artifactId = "android-stub"
+                artifactId = "pesan-android-stub"
                 version = "1.0"
 
                 afterEvaluate {

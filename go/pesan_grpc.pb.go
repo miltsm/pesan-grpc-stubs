@@ -4,7 +4,7 @@
 // - protoc             v5.28.3
 // source: pesan.proto
 
-package pesan_backend
+package pesan_grpc_stubs
 
 import (
 	context "context"
@@ -20,18 +20,22 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Pesan_Onboard_FullMethodName             = "/pesan.Pesan/Onboard"
-	Pesan_RegisterPublicKey_FullMethodName   = "/pesan.Pesan/RegisterPublicKey"
-	Pesan_CreateNewProduct_FullMethodName    = "/pesan.Pesan/CreateNewProduct"
-	Pesan_UploadProductPhotos_FullMethodName = "/pesan.Pesan/UploadProductPhotos"
+	Pesan_OnboardWithPublicKey_FullMethodName      = "/pesan.Pesan/OnboardWithPublicKey"
+	Pesan_VerifyPublicKeyAndOnboard_FullMethodName = "/pesan.Pesan/VerifyPublicKeyAndOnboard"
+	Pesan_DiscoverLogin_FullMethodName             = "/pesan.Pesan/DiscoverLogin"
+	Pesan_VerifyPublicKeyLogin_FullMethodName      = "/pesan.Pesan/VerifyPublicKeyLogin"
+	Pesan_CreateNewProduct_FullMethodName          = "/pesan.Pesan/CreateNewProduct"
+	Pesan_UploadProductPhotos_FullMethodName       = "/pesan.Pesan/UploadProductPhotos"
 )
 
 // PesanClient is the client API for Pesan service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type PesanClient interface {
-	Onboard(ctx context.Context, in *CredentialRequest, opts ...grpc.CallOption) (*ChallengeReply, error)
-	RegisterPublicKey(ctx context.Context, in *AssertRequest, opts ...grpc.CallOption) (*AssertReply, error)
+	OnboardWithPublicKey(ctx context.Context, in *OnboardRequest, opts ...grpc.CallOption) (*AssertSession, error)
+	VerifyPublicKeyAndOnboard(ctx context.Context, in *VerifyPublicKeyRequest, opts ...grpc.CallOption) (*UserSession, error)
+	DiscoverLogin(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*AttestSession, error)
+	VerifyPublicKeyLogin(ctx context.Context, in *VerifyPublicKeyRequest, opts ...grpc.CallOption) (*UserSession, error)
 	CreateNewProduct(ctx context.Context, in *NewProductRequest, opts ...grpc.CallOption) (*NewProductReply, error)
 	UploadProductPhotos(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[NewPhoto, emptypb.Empty], error)
 }
@@ -44,20 +48,40 @@ func NewPesanClient(cc grpc.ClientConnInterface) PesanClient {
 	return &pesanClient{cc}
 }
 
-func (c *pesanClient) Onboard(ctx context.Context, in *CredentialRequest, opts ...grpc.CallOption) (*ChallengeReply, error) {
+func (c *pesanClient) OnboardWithPublicKey(ctx context.Context, in *OnboardRequest, opts ...grpc.CallOption) (*AssertSession, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ChallengeReply)
-	err := c.cc.Invoke(ctx, Pesan_Onboard_FullMethodName, in, out, cOpts...)
+	out := new(AssertSession)
+	err := c.cc.Invoke(ctx, Pesan_OnboardWithPublicKey_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *pesanClient) RegisterPublicKey(ctx context.Context, in *AssertRequest, opts ...grpc.CallOption) (*AssertReply, error) {
+func (c *pesanClient) VerifyPublicKeyAndOnboard(ctx context.Context, in *VerifyPublicKeyRequest, opts ...grpc.CallOption) (*UserSession, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(AssertReply)
-	err := c.cc.Invoke(ctx, Pesan_RegisterPublicKey_FullMethodName, in, out, cOpts...)
+	out := new(UserSession)
+	err := c.cc.Invoke(ctx, Pesan_VerifyPublicKeyAndOnboard_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *pesanClient) DiscoverLogin(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*AttestSession, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AttestSession)
+	err := c.cc.Invoke(ctx, Pesan_DiscoverLogin_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *pesanClient) VerifyPublicKeyLogin(ctx context.Context, in *VerifyPublicKeyRequest, opts ...grpc.CallOption) (*UserSession, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UserSession)
+	err := c.cc.Invoke(ctx, Pesan_VerifyPublicKeyLogin_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -91,8 +115,10 @@ type Pesan_UploadProductPhotosClient = grpc.ClientStreamingClient[NewPhoto, empt
 // All implementations must embed UnimplementedPesanServer
 // for forward compatibility.
 type PesanServer interface {
-	Onboard(context.Context, *CredentialRequest) (*ChallengeReply, error)
-	RegisterPublicKey(context.Context, *AssertRequest) (*AssertReply, error)
+	OnboardWithPublicKey(context.Context, *OnboardRequest) (*AssertSession, error)
+	VerifyPublicKeyAndOnboard(context.Context, *VerifyPublicKeyRequest) (*UserSession, error)
+	DiscoverLogin(context.Context, *emptypb.Empty) (*AttestSession, error)
+	VerifyPublicKeyLogin(context.Context, *VerifyPublicKeyRequest) (*UserSession, error)
 	CreateNewProduct(context.Context, *NewProductRequest) (*NewProductReply, error)
 	UploadProductPhotos(grpc.ClientStreamingServer[NewPhoto, emptypb.Empty]) error
 	mustEmbedUnimplementedPesanServer()
@@ -105,11 +131,17 @@ type PesanServer interface {
 // pointer dereference when methods are called.
 type UnimplementedPesanServer struct{}
 
-func (UnimplementedPesanServer) Onboard(context.Context, *CredentialRequest) (*ChallengeReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Onboard not implemented")
+func (UnimplementedPesanServer) OnboardWithPublicKey(context.Context, *OnboardRequest) (*AssertSession, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method OnboardWithPublicKey not implemented")
 }
-func (UnimplementedPesanServer) RegisterPublicKey(context.Context, *AssertRequest) (*AssertReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RegisterPublicKey not implemented")
+func (UnimplementedPesanServer) VerifyPublicKeyAndOnboard(context.Context, *VerifyPublicKeyRequest) (*UserSession, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method VerifyPublicKeyAndOnboard not implemented")
+}
+func (UnimplementedPesanServer) DiscoverLogin(context.Context, *emptypb.Empty) (*AttestSession, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DiscoverLogin not implemented")
+}
+func (UnimplementedPesanServer) VerifyPublicKeyLogin(context.Context, *VerifyPublicKeyRequest) (*UserSession, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method VerifyPublicKeyLogin not implemented")
 }
 func (UnimplementedPesanServer) CreateNewProduct(context.Context, *NewProductRequest) (*NewProductReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateNewProduct not implemented")
@@ -138,38 +170,74 @@ func RegisterPesanServer(s grpc.ServiceRegistrar, srv PesanServer) {
 	s.RegisterService(&Pesan_ServiceDesc, srv)
 }
 
-func _Pesan_Onboard_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CredentialRequest)
+func _Pesan_OnboardWithPublicKey_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(OnboardRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(PesanServer).Onboard(ctx, in)
+		return srv.(PesanServer).OnboardWithPublicKey(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Pesan_Onboard_FullMethodName,
+		FullMethod: Pesan_OnboardWithPublicKey_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PesanServer).Onboard(ctx, req.(*CredentialRequest))
+		return srv.(PesanServer).OnboardWithPublicKey(ctx, req.(*OnboardRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Pesan_RegisterPublicKey_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AssertRequest)
+func _Pesan_VerifyPublicKeyAndOnboard_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(VerifyPublicKeyRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(PesanServer).RegisterPublicKey(ctx, in)
+		return srv.(PesanServer).VerifyPublicKeyAndOnboard(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Pesan_RegisterPublicKey_FullMethodName,
+		FullMethod: Pesan_VerifyPublicKeyAndOnboard_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PesanServer).RegisterPublicKey(ctx, req.(*AssertRequest))
+		return srv.(PesanServer).VerifyPublicKeyAndOnboard(ctx, req.(*VerifyPublicKeyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Pesan_DiscoverLogin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PesanServer).DiscoverLogin(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Pesan_DiscoverLogin_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PesanServer).DiscoverLogin(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Pesan_VerifyPublicKeyLogin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(VerifyPublicKeyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PesanServer).VerifyPublicKeyLogin(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Pesan_VerifyPublicKeyLogin_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PesanServer).VerifyPublicKeyLogin(ctx, req.(*VerifyPublicKeyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -207,12 +275,20 @@ var Pesan_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*PesanServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "Onboard",
-			Handler:    _Pesan_Onboard_Handler,
+			MethodName: "OnboardWithPublicKey",
+			Handler:    _Pesan_OnboardWithPublicKey_Handler,
 		},
 		{
-			MethodName: "RegisterPublicKey",
-			Handler:    _Pesan_RegisterPublicKey_Handler,
+			MethodName: "VerifyPublicKeyAndOnboard",
+			Handler:    _Pesan_VerifyPublicKeyAndOnboard_Handler,
+		},
+		{
+			MethodName: "DiscoverLogin",
+			Handler:    _Pesan_DiscoverLogin_Handler,
+		},
+		{
+			MethodName: "VerifyPublicKeyLogin",
+			Handler:    _Pesan_VerifyPublicKeyLogin_Handler,
 		},
 		{
 			MethodName: "CreateNewProduct",
