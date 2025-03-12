@@ -13,9 +13,11 @@ import "google/protobuf/empty.proto";
 service Pesan {
 	rpc OnboardWithPublicKey(OnboardRequest) returns (AssertSession);
 	rpc VerifyPublicKeyAndOnboard(VerifyPublicKeyRequest) returns (UserSession);
+	rpc OnboardWithPassword(OnboardRequest) returns (UserSession);
 
 	rpc DiscoverLogin(google.protobuf.Empty) returns (AttestSession);
 	rpc VerifyPublicKeyLogin(VerifyPublicKeyRequest) returns (UserSession);
+	rpc LoginWithPassword(PasswordLoginRequest) returns (UserSession);
 
 	rpc CreateNewProduct (NewProductRequest) returns (NewProductReply);
 	rpc UploadProductPhotos (stream NewPhoto) returns (google.protobuf.Empty);
@@ -25,6 +27,12 @@ message OnboardRequest {
 	string user_handle = 1;
 	optional string display_name = 2;
 	optional string new_password = 3;
+}
+
+message PasswordLoginRequest {
+    string user_handle = 1;
+    optional string display_name = 2;
+    bytes password = 3;
 }
 
 // this allow for caching on front-end & prevent abuse calls
