@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.protobuf)
     id("maven-publish")
+    alias(libs.plugins.secrets)
 }
 
 android {
@@ -33,10 +34,19 @@ android {
         jvmTarget = "11"
         freeCompilerArgs = listOf("-opt-in=kotlin.RequiresOptIn")
     }
+    buildFeatures {
+        buildConfig = true
+    }
+    secrets {
+        propertiesFileName = "secrets.properties"
+
+        // A properties file containing default secret values. This file can be
+        // checked in version control.
+        defaultPropertiesFileName = "local.defaults.properties"
+    }
 }
 
 dependencies {
-
     protobuf(project(":protos"))
 
     api(libs.grpc.stub)
@@ -51,7 +61,6 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
-//    androidTestImplementation(libs.androidx.espresso.core)
 }
 
 protobuf {
