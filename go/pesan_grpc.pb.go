@@ -20,111 +20,403 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Pesan_OnboardWithPublicKey_FullMethodName      = "/pesan.Pesan/OnboardWithPublicKey"
-	Pesan_VerifyPublicKeyAndOnboard_FullMethodName = "/pesan.Pesan/VerifyPublicKeyAndOnboard"
-	Pesan_OnboardWithPassword_FullMethodName       = "/pesan.Pesan/OnboardWithPassword"
-	Pesan_DiscoverLogin_FullMethodName             = "/pesan.Pesan/DiscoverLogin"
-	Pesan_VerifyPublicKeyLogin_FullMethodName      = "/pesan.Pesan/VerifyPublicKeyLogin"
-	Pesan_LoginWithPassword_FullMethodName         = "/pesan.Pesan/LoginWithPassword"
-	Pesan_CreateNewProduct_FullMethodName          = "/pesan.Pesan/CreateNewProduct"
-	Pesan_UploadProductPhotos_FullMethodName       = "/pesan.Pesan/UploadProductPhotos"
+	Public_OnboardWithPublicKey_FullMethodName      = "/pesan.Public/OnboardWithPublicKey"
+	Public_VerifyPublicKeyAndOnboard_FullMethodName = "/pesan.Public/VerifyPublicKeyAndOnboard"
+	Public_OnboardWithPassword_FullMethodName       = "/pesan.Public/OnboardWithPassword"
+	Public_DiscoverLogin_FullMethodName             = "/pesan.Public/DiscoverLogin"
+	Public_VerifyPublicKeyLogin_FullMethodName      = "/pesan.Public/VerifyPublicKeyLogin"
+	Public_LoginWithPassword_FullMethodName         = "/pesan.Public/LoginWithPassword"
 )
 
-// PesanClient is the client API for Pesan service.
+// PublicClient is the client API for Public service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type PesanClient interface {
-	OnboardWithPublicKey(ctx context.Context, in *OnboardRequest, opts ...grpc.CallOption) (*AssertSession, error)
+type PublicClient interface {
+	OnboardWithPublicKey(ctx context.Context, in *OnboardRequest, opts ...grpc.CallOption) (*PublicKeyOptions, error)
 	VerifyPublicKeyAndOnboard(ctx context.Context, in *VerifyPublicKeyRequest, opts ...grpc.CallOption) (*UserSession, error)
 	OnboardWithPassword(ctx context.Context, in *OnboardRequest, opts ...grpc.CallOption) (*UserSession, error)
-	DiscoverLogin(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*AttestSession, error)
+	DiscoverLogin(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*PublicKeyOptions, error)
 	VerifyPublicKeyLogin(ctx context.Context, in *VerifyPublicKeyRequest, opts ...grpc.CallOption) (*UserSession, error)
 	LoginWithPassword(ctx context.Context, in *PasswordLoginRequest, opts ...grpc.CallOption) (*UserSession, error)
+}
+
+type publicClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewPublicClient(cc grpc.ClientConnInterface) PublicClient {
+	return &publicClient{cc}
+}
+
+func (c *publicClient) OnboardWithPublicKey(ctx context.Context, in *OnboardRequest, opts ...grpc.CallOption) (*PublicKeyOptions, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PublicKeyOptions)
+	err := c.cc.Invoke(ctx, Public_OnboardWithPublicKey_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *publicClient) VerifyPublicKeyAndOnboard(ctx context.Context, in *VerifyPublicKeyRequest, opts ...grpc.CallOption) (*UserSession, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UserSession)
+	err := c.cc.Invoke(ctx, Public_VerifyPublicKeyAndOnboard_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *publicClient) OnboardWithPassword(ctx context.Context, in *OnboardRequest, opts ...grpc.CallOption) (*UserSession, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UserSession)
+	err := c.cc.Invoke(ctx, Public_OnboardWithPassword_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *publicClient) DiscoverLogin(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*PublicKeyOptions, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PublicKeyOptions)
+	err := c.cc.Invoke(ctx, Public_DiscoverLogin_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *publicClient) VerifyPublicKeyLogin(ctx context.Context, in *VerifyPublicKeyRequest, opts ...grpc.CallOption) (*UserSession, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UserSession)
+	err := c.cc.Invoke(ctx, Public_VerifyPublicKeyLogin_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *publicClient) LoginWithPassword(ctx context.Context, in *PasswordLoginRequest, opts ...grpc.CallOption) (*UserSession, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UserSession)
+	err := c.cc.Invoke(ctx, Public_LoginWithPassword_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// PublicServer is the server API for Public service.
+// All implementations must embed UnimplementedPublicServer
+// for forward compatibility.
+type PublicServer interface {
+	OnboardWithPublicKey(context.Context, *OnboardRequest) (*PublicKeyOptions, error)
+	VerifyPublicKeyAndOnboard(context.Context, *VerifyPublicKeyRequest) (*UserSession, error)
+	OnboardWithPassword(context.Context, *OnboardRequest) (*UserSession, error)
+	DiscoverLogin(context.Context, *emptypb.Empty) (*PublicKeyOptions, error)
+	VerifyPublicKeyLogin(context.Context, *VerifyPublicKeyRequest) (*UserSession, error)
+	LoginWithPassword(context.Context, *PasswordLoginRequest) (*UserSession, error)
+	mustEmbedUnimplementedPublicServer()
+}
+
+// UnimplementedPublicServer must be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedPublicServer struct{}
+
+func (UnimplementedPublicServer) OnboardWithPublicKey(context.Context, *OnboardRequest) (*PublicKeyOptions, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method OnboardWithPublicKey not implemented")
+}
+func (UnimplementedPublicServer) VerifyPublicKeyAndOnboard(context.Context, *VerifyPublicKeyRequest) (*UserSession, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method VerifyPublicKeyAndOnboard not implemented")
+}
+func (UnimplementedPublicServer) OnboardWithPassword(context.Context, *OnboardRequest) (*UserSession, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method OnboardWithPassword not implemented")
+}
+func (UnimplementedPublicServer) DiscoverLogin(context.Context, *emptypb.Empty) (*PublicKeyOptions, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DiscoverLogin not implemented")
+}
+func (UnimplementedPublicServer) VerifyPublicKeyLogin(context.Context, *VerifyPublicKeyRequest) (*UserSession, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method VerifyPublicKeyLogin not implemented")
+}
+func (UnimplementedPublicServer) LoginWithPassword(context.Context, *PasswordLoginRequest) (*UserSession, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method LoginWithPassword not implemented")
+}
+func (UnimplementedPublicServer) mustEmbedUnimplementedPublicServer() {}
+func (UnimplementedPublicServer) testEmbeddedByValue()                {}
+
+// UnsafePublicServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to PublicServer will
+// result in compilation errors.
+type UnsafePublicServer interface {
+	mustEmbedUnimplementedPublicServer()
+}
+
+func RegisterPublicServer(s grpc.ServiceRegistrar, srv PublicServer) {
+	// If the following call pancis, it indicates UnimplementedPublicServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&Public_ServiceDesc, srv)
+}
+
+func _Public_OnboardWithPublicKey_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(OnboardRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PublicServer).OnboardWithPublicKey(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Public_OnboardWithPublicKey_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PublicServer).OnboardWithPublicKey(ctx, req.(*OnboardRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Public_VerifyPublicKeyAndOnboard_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(VerifyPublicKeyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PublicServer).VerifyPublicKeyAndOnboard(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Public_VerifyPublicKeyAndOnboard_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PublicServer).VerifyPublicKeyAndOnboard(ctx, req.(*VerifyPublicKeyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Public_OnboardWithPassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(OnboardRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PublicServer).OnboardWithPassword(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Public_OnboardWithPassword_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PublicServer).OnboardWithPassword(ctx, req.(*OnboardRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Public_DiscoverLogin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PublicServer).DiscoverLogin(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Public_DiscoverLogin_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PublicServer).DiscoverLogin(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Public_VerifyPublicKeyLogin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(VerifyPublicKeyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PublicServer).VerifyPublicKeyLogin(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Public_VerifyPublicKeyLogin_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PublicServer).VerifyPublicKeyLogin(ctx, req.(*VerifyPublicKeyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Public_LoginWithPassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PasswordLoginRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PublicServer).LoginWithPassword(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Public_LoginWithPassword_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PublicServer).LoginWithPassword(ctx, req.(*PasswordLoginRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// Public_ServiceDesc is the grpc.ServiceDesc for Public service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var Public_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "pesan.Public",
+	HandlerType: (*PublicServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "OnboardWithPublicKey",
+			Handler:    _Public_OnboardWithPublicKey_Handler,
+		},
+		{
+			MethodName: "VerifyPublicKeyAndOnboard",
+			Handler:    _Public_VerifyPublicKeyAndOnboard_Handler,
+		},
+		{
+			MethodName: "OnboardWithPassword",
+			Handler:    _Public_OnboardWithPassword_Handler,
+		},
+		{
+			MethodName: "DiscoverLogin",
+			Handler:    _Public_DiscoverLogin_Handler,
+		},
+		{
+			MethodName: "VerifyPublicKeyLogin",
+			Handler:    _Public_VerifyPublicKeyLogin_Handler,
+		},
+		{
+			MethodName: "LoginWithPassword",
+			Handler:    _Public_LoginWithPassword_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "pesan.proto",
+}
+
+const (
+	Protected_RefreshSession_FullMethodName        = "/pesan.Protected/RefreshSession"
+	Protected_ReAuth_FullMethodName                = "/pesan.Protected/ReAuth"
+	Protected_VerifyPublicKeyReAuth_FullMethodName = "/pesan.Protected/VerifyPublicKeyReAuth"
+	Protected_ReAuthWithPassword_FullMethodName    = "/pesan.Protected/ReAuthWithPassword"
+	Protected_CreateNewShop_FullMethodName         = "/pesan.Protected/CreateNewShop"
+	Protected_GetShops_FullMethodName              = "/pesan.Protected/GetShops"
+	Protected_CreateNewProduct_FullMethodName      = "/pesan.Protected/CreateNewProduct"
+	Protected_UploadProductPhotos_FullMethodName   = "/pesan.Protected/UploadProductPhotos"
+)
+
+// ProtectedClient is the client API for Protected service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type ProtectedClient interface {
+	RefreshSession(ctx context.Context, in *RefreshRequest, opts ...grpc.CallOption) (*RefreshReply, error)
+	ReAuth(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*PublicKeyOptions, error)
+	VerifyPublicKeyReAuth(ctx context.Context, in *VerifyPublicKeyRequest, opts ...grpc.CallOption) (*RefreshReply, error)
+	ReAuthWithPassword(ctx context.Context, in *ReAuthPasswordRequest, opts ...grpc.CallOption) (*RefreshReply, error)
+	CreateNewShop(ctx context.Context, in *NewShopRequest, opts ...grpc.CallOption) (*NewShopReply, error)
+	GetShops(ctx context.Context, in *ShopRequest, opts ...grpc.CallOption) (*ShopPage, error)
 	CreateNewProduct(ctx context.Context, in *NewProductRequest, opts ...grpc.CallOption) (*NewProductReply, error)
 	UploadProductPhotos(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[NewPhoto, emptypb.Empty], error)
 }
 
-type pesanClient struct {
+type protectedClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewPesanClient(cc grpc.ClientConnInterface) PesanClient {
-	return &pesanClient{cc}
+func NewProtectedClient(cc grpc.ClientConnInterface) ProtectedClient {
+	return &protectedClient{cc}
 }
 
-func (c *pesanClient) OnboardWithPublicKey(ctx context.Context, in *OnboardRequest, opts ...grpc.CallOption) (*AssertSession, error) {
+func (c *protectedClient) RefreshSession(ctx context.Context, in *RefreshRequest, opts ...grpc.CallOption) (*RefreshReply, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(AssertSession)
-	err := c.cc.Invoke(ctx, Pesan_OnboardWithPublicKey_FullMethodName, in, out, cOpts...)
+	out := new(RefreshReply)
+	err := c.cc.Invoke(ctx, Protected_RefreshSession_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *pesanClient) VerifyPublicKeyAndOnboard(ctx context.Context, in *VerifyPublicKeyRequest, opts ...grpc.CallOption) (*UserSession, error) {
+func (c *protectedClient) ReAuth(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*PublicKeyOptions, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(UserSession)
-	err := c.cc.Invoke(ctx, Pesan_VerifyPublicKeyAndOnboard_FullMethodName, in, out, cOpts...)
+	out := new(PublicKeyOptions)
+	err := c.cc.Invoke(ctx, Protected_ReAuth_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *pesanClient) OnboardWithPassword(ctx context.Context, in *OnboardRequest, opts ...grpc.CallOption) (*UserSession, error) {
+func (c *protectedClient) VerifyPublicKeyReAuth(ctx context.Context, in *VerifyPublicKeyRequest, opts ...grpc.CallOption) (*RefreshReply, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(UserSession)
-	err := c.cc.Invoke(ctx, Pesan_OnboardWithPassword_FullMethodName, in, out, cOpts...)
+	out := new(RefreshReply)
+	err := c.cc.Invoke(ctx, Protected_VerifyPublicKeyReAuth_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *pesanClient) DiscoverLogin(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*AttestSession, error) {
+func (c *protectedClient) ReAuthWithPassword(ctx context.Context, in *ReAuthPasswordRequest, opts ...grpc.CallOption) (*RefreshReply, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(AttestSession)
-	err := c.cc.Invoke(ctx, Pesan_DiscoverLogin_FullMethodName, in, out, cOpts...)
+	out := new(RefreshReply)
+	err := c.cc.Invoke(ctx, Protected_ReAuthWithPassword_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *pesanClient) VerifyPublicKeyLogin(ctx context.Context, in *VerifyPublicKeyRequest, opts ...grpc.CallOption) (*UserSession, error) {
+func (c *protectedClient) CreateNewShop(ctx context.Context, in *NewShopRequest, opts ...grpc.CallOption) (*NewShopReply, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(UserSession)
-	err := c.cc.Invoke(ctx, Pesan_VerifyPublicKeyLogin_FullMethodName, in, out, cOpts...)
+	out := new(NewShopReply)
+	err := c.cc.Invoke(ctx, Protected_CreateNewShop_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *pesanClient) LoginWithPassword(ctx context.Context, in *PasswordLoginRequest, opts ...grpc.CallOption) (*UserSession, error) {
+func (c *protectedClient) GetShops(ctx context.Context, in *ShopRequest, opts ...grpc.CallOption) (*ShopPage, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(UserSession)
-	err := c.cc.Invoke(ctx, Pesan_LoginWithPassword_FullMethodName, in, out, cOpts...)
+	out := new(ShopPage)
+	err := c.cc.Invoke(ctx, Protected_GetShops_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *pesanClient) CreateNewProduct(ctx context.Context, in *NewProductRequest, opts ...grpc.CallOption) (*NewProductReply, error) {
+func (c *protectedClient) CreateNewProduct(ctx context.Context, in *NewProductRequest, opts ...grpc.CallOption) (*NewProductReply, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(NewProductReply)
-	err := c.cc.Invoke(ctx, Pesan_CreateNewProduct_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, Protected_CreateNewProduct_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *pesanClient) UploadProductPhotos(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[NewPhoto, emptypb.Empty], error) {
+func (c *protectedClient) UploadProductPhotos(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[NewPhoto, emptypb.Empty], error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	stream, err := c.cc.NewStream(ctx, &Pesan_ServiceDesc.Streams[0], Pesan_UploadProductPhotos_FullMethodName, cOpts...)
+	stream, err := c.cc.NewStream(ctx, &Protected_ServiceDesc.Streams[0], Protected_UploadProductPhotos_FullMethodName, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -133,248 +425,248 @@ func (c *pesanClient) UploadProductPhotos(ctx context.Context, opts ...grpc.Call
 }
 
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type Pesan_UploadProductPhotosClient = grpc.ClientStreamingClient[NewPhoto, emptypb.Empty]
+type Protected_UploadProductPhotosClient = grpc.ClientStreamingClient[NewPhoto, emptypb.Empty]
 
-// PesanServer is the server API for Pesan service.
-// All implementations must embed UnimplementedPesanServer
+// ProtectedServer is the server API for Protected service.
+// All implementations must embed UnimplementedProtectedServer
 // for forward compatibility.
-type PesanServer interface {
-	OnboardWithPublicKey(context.Context, *OnboardRequest) (*AssertSession, error)
-	VerifyPublicKeyAndOnboard(context.Context, *VerifyPublicKeyRequest) (*UserSession, error)
-	OnboardWithPassword(context.Context, *OnboardRequest) (*UserSession, error)
-	DiscoverLogin(context.Context, *emptypb.Empty) (*AttestSession, error)
-	VerifyPublicKeyLogin(context.Context, *VerifyPublicKeyRequest) (*UserSession, error)
-	LoginWithPassword(context.Context, *PasswordLoginRequest) (*UserSession, error)
+type ProtectedServer interface {
+	RefreshSession(context.Context, *RefreshRequest) (*RefreshReply, error)
+	ReAuth(context.Context, *emptypb.Empty) (*PublicKeyOptions, error)
+	VerifyPublicKeyReAuth(context.Context, *VerifyPublicKeyRequest) (*RefreshReply, error)
+	ReAuthWithPassword(context.Context, *ReAuthPasswordRequest) (*RefreshReply, error)
+	CreateNewShop(context.Context, *NewShopRequest) (*NewShopReply, error)
+	GetShops(context.Context, *ShopRequest) (*ShopPage, error)
 	CreateNewProduct(context.Context, *NewProductRequest) (*NewProductReply, error)
 	UploadProductPhotos(grpc.ClientStreamingServer[NewPhoto, emptypb.Empty]) error
-	mustEmbedUnimplementedPesanServer()
+	mustEmbedUnimplementedProtectedServer()
 }
 
-// UnimplementedPesanServer must be embedded to have
+// UnimplementedProtectedServer must be embedded to have
 // forward compatible implementations.
 //
 // NOTE: this should be embedded by value instead of pointer to avoid a nil
 // pointer dereference when methods are called.
-type UnimplementedPesanServer struct{}
+type UnimplementedProtectedServer struct{}
 
-func (UnimplementedPesanServer) OnboardWithPublicKey(context.Context, *OnboardRequest) (*AssertSession, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method OnboardWithPublicKey not implemented")
+func (UnimplementedProtectedServer) RefreshSession(context.Context, *RefreshRequest) (*RefreshReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RefreshSession not implemented")
 }
-func (UnimplementedPesanServer) VerifyPublicKeyAndOnboard(context.Context, *VerifyPublicKeyRequest) (*UserSession, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method VerifyPublicKeyAndOnboard not implemented")
+func (UnimplementedProtectedServer) ReAuth(context.Context, *emptypb.Empty) (*PublicKeyOptions, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ReAuth not implemented")
 }
-func (UnimplementedPesanServer) OnboardWithPassword(context.Context, *OnboardRequest) (*UserSession, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method OnboardWithPassword not implemented")
+func (UnimplementedProtectedServer) VerifyPublicKeyReAuth(context.Context, *VerifyPublicKeyRequest) (*RefreshReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method VerifyPublicKeyReAuth not implemented")
 }
-func (UnimplementedPesanServer) DiscoverLogin(context.Context, *emptypb.Empty) (*AttestSession, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DiscoverLogin not implemented")
+func (UnimplementedProtectedServer) ReAuthWithPassword(context.Context, *ReAuthPasswordRequest) (*RefreshReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ReAuthWithPassword not implemented")
 }
-func (UnimplementedPesanServer) VerifyPublicKeyLogin(context.Context, *VerifyPublicKeyRequest) (*UserSession, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method VerifyPublicKeyLogin not implemented")
+func (UnimplementedProtectedServer) CreateNewShop(context.Context, *NewShopRequest) (*NewShopReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateNewShop not implemented")
 }
-func (UnimplementedPesanServer) LoginWithPassword(context.Context, *PasswordLoginRequest) (*UserSession, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method LoginWithPassword not implemented")
+func (UnimplementedProtectedServer) GetShops(context.Context, *ShopRequest) (*ShopPage, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetShops not implemented")
 }
-func (UnimplementedPesanServer) CreateNewProduct(context.Context, *NewProductRequest) (*NewProductReply, error) {
+func (UnimplementedProtectedServer) CreateNewProduct(context.Context, *NewProductRequest) (*NewProductReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateNewProduct not implemented")
 }
-func (UnimplementedPesanServer) UploadProductPhotos(grpc.ClientStreamingServer[NewPhoto, emptypb.Empty]) error {
+func (UnimplementedProtectedServer) UploadProductPhotos(grpc.ClientStreamingServer[NewPhoto, emptypb.Empty]) error {
 	return status.Errorf(codes.Unimplemented, "method UploadProductPhotos not implemented")
 }
-func (UnimplementedPesanServer) mustEmbedUnimplementedPesanServer() {}
-func (UnimplementedPesanServer) testEmbeddedByValue()               {}
+func (UnimplementedProtectedServer) mustEmbedUnimplementedProtectedServer() {}
+func (UnimplementedProtectedServer) testEmbeddedByValue()                   {}
 
-// UnsafePesanServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to PesanServer will
+// UnsafeProtectedServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to ProtectedServer will
 // result in compilation errors.
-type UnsafePesanServer interface {
-	mustEmbedUnimplementedPesanServer()
+type UnsafeProtectedServer interface {
+	mustEmbedUnimplementedProtectedServer()
 }
 
-func RegisterPesanServer(s grpc.ServiceRegistrar, srv PesanServer) {
-	// If the following call pancis, it indicates UnimplementedPesanServer was
+func RegisterProtectedServer(s grpc.ServiceRegistrar, srv ProtectedServer) {
+	// If the following call pancis, it indicates UnimplementedProtectedServer was
 	// embedded by pointer and is nil.  This will cause panics if an
 	// unimplemented method is ever invoked, so we test this at initialization
 	// time to prevent it from happening at runtime later due to I/O.
 	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
 		t.testEmbeddedByValue()
 	}
-	s.RegisterService(&Pesan_ServiceDesc, srv)
+	s.RegisterService(&Protected_ServiceDesc, srv)
 }
 
-func _Pesan_OnboardWithPublicKey_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(OnboardRequest)
+func _Protected_RefreshSession_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RefreshRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(PesanServer).OnboardWithPublicKey(ctx, in)
+		return srv.(ProtectedServer).RefreshSession(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Pesan_OnboardWithPublicKey_FullMethodName,
+		FullMethod: Protected_RefreshSession_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PesanServer).OnboardWithPublicKey(ctx, req.(*OnboardRequest))
+		return srv.(ProtectedServer).RefreshSession(ctx, req.(*RefreshRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Pesan_VerifyPublicKeyAndOnboard_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(VerifyPublicKeyRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PesanServer).VerifyPublicKeyAndOnboard(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Pesan_VerifyPublicKeyAndOnboard_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PesanServer).VerifyPublicKeyAndOnboard(ctx, req.(*VerifyPublicKeyRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Pesan_OnboardWithPassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(OnboardRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PesanServer).OnboardWithPassword(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Pesan_OnboardWithPassword_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PesanServer).OnboardWithPassword(ctx, req.(*OnboardRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Pesan_DiscoverLogin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Protected_ReAuth_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(PesanServer).DiscoverLogin(ctx, in)
+		return srv.(ProtectedServer).ReAuth(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Pesan_DiscoverLogin_FullMethodName,
+		FullMethod: Protected_ReAuth_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PesanServer).DiscoverLogin(ctx, req.(*emptypb.Empty))
+		return srv.(ProtectedServer).ReAuth(ctx, req.(*emptypb.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Pesan_VerifyPublicKeyLogin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Protected_VerifyPublicKeyReAuth_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(VerifyPublicKeyRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(PesanServer).VerifyPublicKeyLogin(ctx, in)
+		return srv.(ProtectedServer).VerifyPublicKeyReAuth(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Pesan_VerifyPublicKeyLogin_FullMethodName,
+		FullMethod: Protected_VerifyPublicKeyReAuth_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PesanServer).VerifyPublicKeyLogin(ctx, req.(*VerifyPublicKeyRequest))
+		return srv.(ProtectedServer).VerifyPublicKeyReAuth(ctx, req.(*VerifyPublicKeyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Pesan_LoginWithPassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PasswordLoginRequest)
+func _Protected_ReAuthWithPassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ReAuthPasswordRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(PesanServer).LoginWithPassword(ctx, in)
+		return srv.(ProtectedServer).ReAuthWithPassword(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Pesan_LoginWithPassword_FullMethodName,
+		FullMethod: Protected_ReAuthWithPassword_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PesanServer).LoginWithPassword(ctx, req.(*PasswordLoginRequest))
+		return srv.(ProtectedServer).ReAuthWithPassword(ctx, req.(*ReAuthPasswordRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Pesan_CreateNewProduct_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Protected_CreateNewShop_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NewShopRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProtectedServer).CreateNewShop(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Protected_CreateNewShop_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProtectedServer).CreateNewShop(ctx, req.(*NewShopRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Protected_GetShops_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ShopRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProtectedServer).GetShops(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Protected_GetShops_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProtectedServer).GetShops(ctx, req.(*ShopRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Protected_CreateNewProduct_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(NewProductRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(PesanServer).CreateNewProduct(ctx, in)
+		return srv.(ProtectedServer).CreateNewProduct(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Pesan_CreateNewProduct_FullMethodName,
+		FullMethod: Protected_CreateNewProduct_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PesanServer).CreateNewProduct(ctx, req.(*NewProductRequest))
+		return srv.(ProtectedServer).CreateNewProduct(ctx, req.(*NewProductRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Pesan_UploadProductPhotos_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(PesanServer).UploadProductPhotos(&grpc.GenericServerStream[NewPhoto, emptypb.Empty]{ServerStream: stream})
+func _Protected_UploadProductPhotos_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(ProtectedServer).UploadProductPhotos(&grpc.GenericServerStream[NewPhoto, emptypb.Empty]{ServerStream: stream})
 }
 
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type Pesan_UploadProductPhotosServer = grpc.ClientStreamingServer[NewPhoto, emptypb.Empty]
+type Protected_UploadProductPhotosServer = grpc.ClientStreamingServer[NewPhoto, emptypb.Empty]
 
-// Pesan_ServiceDesc is the grpc.ServiceDesc for Pesan service.
+// Protected_ServiceDesc is the grpc.ServiceDesc for Protected service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var Pesan_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "pesan.Pesan",
-	HandlerType: (*PesanServer)(nil),
+var Protected_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "pesan.Protected",
+	HandlerType: (*ProtectedServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "OnboardWithPublicKey",
-			Handler:    _Pesan_OnboardWithPublicKey_Handler,
+			MethodName: "RefreshSession",
+			Handler:    _Protected_RefreshSession_Handler,
 		},
 		{
-			MethodName: "VerifyPublicKeyAndOnboard",
-			Handler:    _Pesan_VerifyPublicKeyAndOnboard_Handler,
+			MethodName: "ReAuth",
+			Handler:    _Protected_ReAuth_Handler,
 		},
 		{
-			MethodName: "OnboardWithPassword",
-			Handler:    _Pesan_OnboardWithPassword_Handler,
+			MethodName: "VerifyPublicKeyReAuth",
+			Handler:    _Protected_VerifyPublicKeyReAuth_Handler,
 		},
 		{
-			MethodName: "DiscoverLogin",
-			Handler:    _Pesan_DiscoverLogin_Handler,
+			MethodName: "ReAuthWithPassword",
+			Handler:    _Protected_ReAuthWithPassword_Handler,
 		},
 		{
-			MethodName: "VerifyPublicKeyLogin",
-			Handler:    _Pesan_VerifyPublicKeyLogin_Handler,
+			MethodName: "CreateNewShop",
+			Handler:    _Protected_CreateNewShop_Handler,
 		},
 		{
-			MethodName: "LoginWithPassword",
-			Handler:    _Pesan_LoginWithPassword_Handler,
+			MethodName: "GetShops",
+			Handler:    _Protected_GetShops_Handler,
 		},
 		{
 			MethodName: "CreateNewProduct",
-			Handler:    _Pesan_CreateNewProduct_Handler,
+			Handler:    _Protected_CreateNewProduct_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
 		{
 			StreamName:    "UploadProductPhotos",
-			Handler:       _Pesan_UploadProductPhotos_Handler,
+			Handler:       _Protected_UploadProductPhotos_Handler,
 			ClientStreams: true,
 		},
 	},

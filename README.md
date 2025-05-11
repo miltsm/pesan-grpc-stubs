@@ -3,7 +3,7 @@
 ## generate android stub
 ### build local .aar
 ```
-    ./gradlew :android-stub:build
+    ./gradlew :pesan-android-stub:build
 ```
 ### build localMaven
 ```

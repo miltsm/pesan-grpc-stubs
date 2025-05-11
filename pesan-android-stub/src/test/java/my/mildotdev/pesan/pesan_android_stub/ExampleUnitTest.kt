@@ -1,15 +1,14 @@
 package my.mildotdev.pesan.pesan_android_stub
 
-import com.github.miltsm.pesan_grpc_stubs.PesanGrpcKt
+import com.github.miltsm.pesan_grpc_stubs.PublicGrpcKt
 import com.github.miltsm.pesan_grpc_stubs.passwordLoginRequest
 import com.google.protobuf.ByteString
 import io.grpc.ManagedChannelBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asExecutor
 import kotlinx.coroutines.runBlocking
+import org.junit.Assert.assertEquals
 import org.junit.Test
-
-import org.junit.Assert.*
 import java.net.URL
 
 /**
@@ -36,7 +35,7 @@ class ExampleUnitTest {
             builder.executor(Dispatchers.IO.asExecutor()).build()
         }
 
-        val pesan = PesanGrpcKt.PesanCoroutineStub(channel)
+        val pesan = PublicGrpcKt.PublicCoroutineStub(channel)
         val request = passwordLoginRequest {
             this.userHandle = "tested"
             this.password = ByteString.copyFromUtf8("testtesttesT1#")

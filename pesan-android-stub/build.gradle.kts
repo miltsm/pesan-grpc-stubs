@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.protobuf)
     id("maven-publish")
     alias(libs.plugins.secrets)
+    alias(libs.plugins.devtools.ksp)
 }
 
 android {
@@ -53,9 +54,12 @@ dependencies {
     api(libs.grpc.protobuf.lite)
     api(libs.grpc.kotlin.stub)
     api(libs.protobuf.kotlin.lite)
+    api(libs.androidx.credentials)
+    api(libs.kotlinx.datetime)
 
     // region Dependency Injection
     api(libs.hilt.android)
+    ksp(libs.hilt.android.compiler)
     // endregion
 
     implementation(libs.androidx.core.ktx)

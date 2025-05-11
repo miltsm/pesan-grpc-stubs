@@ -10,14 +10,24 @@ package pesan;
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
 
-service Pesan {
-	rpc OnboardWithPublicKey(OnboardRequest) returns (AssertSession);
+service Public {
+    rpc OnboardWithPublicKey(OnboardRequest) returns (PublicKeyOptions);
 	rpc VerifyPublicKeyAndOnboard(VerifyPublicKeyRequest) returns (UserSession);
 	rpc OnboardWithPassword(OnboardRequest) returns (UserSession);
 
-	rpc DiscoverLogin(google.protobuf.Empty) returns (AttestSession);
-	rpc VerifyPublicKeyLogin(VerifyPublicKeyRequest) returns (UserSession);
-	rpc LoginWithPassword(PasswordLoginRequest) returns (UserSession);
+	rpc DiscoverLogin(google.protobuf.Empty) returns (PublicKeyOptions);
+    rpc VerifyPublicKeyLogin(VerifyPublicKeyRequest) returns (UserSession);
+    rpc LoginWithPassword(PasswordLoginRequest) returns (UserSession);
+}
+
+service Protected {
+    rpc RefreshSession(RefreshRequest) returns (RefreshReply);
+    rpc ReAuth(google.protobuf.Empty) returns (PublicKeyOptions);
+    rpc VerifyPublicKeyReAuth(VerifyPublicKeyRequest) returns (RefreshReply);
+    rpc ReAuthWithPassword(ReAuthPasswordRequest) returns (RefreshReply);
+
+    rpc CreateNewShop(NewShopRequest) returns (NewShopReply);
+    rpc GetShops(ShopRequest) returns (ShopPage);
 
 	rpc CreateNewProduct (NewProductRequest) returns (NewProductReply);
 	rpc UploadProductPhotos (stream NewPhoto) returns (google.protobuf.Empty);
@@ -34,20 +44,35 @@ message PasswordLoginRequest {
     bytes password = 2;
 }
 
+message ReAuthPasswordRequest {
+    bytes password = 1;
+}
+
+message ReAuthRequest {
+    optional bytes signed = 1;
+    optional bytes password = 2;
+}
+
 // this allow for caching on front-end & prevent abuse calls
-message AssertSession {
+message PublicKeyOptions {
 	bytes challenge = 1;
 	google.protobuf.Timestamp valid_until = 2;
 }
 
 message VerifyPublicKeyRequest {
     bytes signed = 1;
+    optional string user_handle = 2;
 }
 
-// this allow for caching on front-end & prevent abuse calls
-message AttestSession {
-    bytes challenge = 1;
-    google.protobuf.Timestamp valid_until = 2;
+message RefreshRequest {
+    bytes token = 1;
+}
+
+message RefreshReply {
+    bytes access_token = 1;
+    optional bytes refresh_token = 2;
+    google.protobuf.Timestamp access_token_expires_at = 3;
+    optional google.protobuf.Timestamp refresh_token_expires_at = 4;
 }
 
 message UserSession {
@@ -58,6 +83,98 @@ message UserSession {
 	optional uint32 total_passkey = 5;
 	optional google.protobuf.Timestamp last_password_updated = 6;
 	google.protobuf.Timestamp access_token_expires_at = 7;
+	google.protobuf.Timestamp refresh_token_expires_at = 8;
+}
+
+enum Day {
+    monday = 0;
+    tuesday = 1;
+    wednesday = 2;
+    thursday = 3;
+    friday = 4;
+    saturday = 5;
+    sunday = 6;
+}
+
+message OperationHour {
+    int32 hour = 1;
+    int32 minute = 2;
+}
+
+enum ContactType {
+    email = 0;
+    phone = 1;
+}
+
+message Contact {
+    ContactType type = 1;
+    string display = 2;
+    string actual = 3;
+}
+
+message NewShopRequest {
+     string name = 1;
+     repeated Contact contacts = 2;
+     string location = 3;
+     repeated string tags = 4;
+     OperationHour opens_at = 5;
+     OperationHour closes_at = 6;
+     repeated Day operation_days = 7;
+      // this is to allow the refresh process efficiently
+      optional bytes refresh_token = 8;
+      optional ReAuthRequest r_auth = 9;
+}
+
+message UuId {
+    bytes id = 1;
+}
+
+message NewShopReply {
+    UuId shop_id = 1;
+    google.protobuf.Timestamp last_updated_at = 2;
+    optional RefreshReply fresh_session = 3;
+    optional PublicKeyOptions options = 4;
+}
+
+message ShopRequest {
+    uint32 page = 1;
+    google.protobuf.Timestamp last_requested_at = 2;
+    // this is to allow the refresh process efficiently
+    optional bytes refresh_token = 3;
+    optional ReAuthRequest r_auth = 4;
+}
+
+message ShopPb {
+    UuId shop_id = 1;
+    string name = 2;
+    repeated string tags = 3;
+    OperationHour opens_at = 4;
+    OperationHour closes_at = 5;
+    repeated Contact contacts = 6;
+    repeated Day operation_days = 7;
+    optional string location = 8;
+}
+
+message RolePb {
+    UuId role_id = 1;
+    bool edit_shop = 2;
+    bool open_close_shop = 3;
+    bool create_products = 4;
+    bool edit_products = 5;
+    bool delete_products = 6;
+    bool create_orders = 7;
+    bool edit_orders = 8;
+}
+
+message ShopRole {
+    optional ShopPb shop = 1;
+    optional RolePb role = 2;
+}
+
+message ShopPage {
+    repeated ShopRole shops = 1;
+    optional RefreshReply fresh_session = 2;
+    optional PublicKeyOptions options = 3;
 }
 
 message NewProductRequest {
